@@ -1,16 +1,13 @@
-title:              Slota Projects
+title:              Max's homepage
 email:              slotamax15@gmail.com
-description:        My website
-author:             Max Slota
+description:        A collection of my projects
+author:             Max Słota
 baseurl:            ""
 url:                "https://worthy11.github.io"
 
 # Social Profiles
-twitter_username:   SBootstrap
-github_username:    StartBootstrap
-facebook_username:  StartBootstrap
-instagram_username:  
-linkedin_username:
+github_username:    worthy11
+linkedin_username:  Max Słota
 
 # Add your google-analytics ID here to activate google analytics
 google_analytics:   UA-XXXXXXXXX-X # out your google-analytics code
