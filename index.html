@@ -21,6 +21,7 @@
             device.addEventListener("inputreport", event => {
                 const { data, device, reportId } = event;
                 
+                document.getElementById('err').innerHTML += `Size: ${data.byteLength}`;
                 for (let step = 0; step < data.byteLength; step++) {
                     document.getElementById('data').innerHTML += `Received[${step}]: ${data.getUint16(step)} `;
                 }
