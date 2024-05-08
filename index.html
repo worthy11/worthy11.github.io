@@ -20,7 +20,7 @@
 
                 let device;
 
-                navigator.usb.requestDevice({ filters: [{ vendorId: 0x2341 }] })
+                navigator.usb.requestDevice({ filters: [{ vendorId: 0x256c }] })
                 .then(selectedDevice => {
                     device = selectedDevice;
                     return device.open(); // Begin a session.
