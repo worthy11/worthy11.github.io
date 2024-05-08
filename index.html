@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebUSB Example</title>
+</head>
+<body>
+    <button id="connectButton">Connect to USB Device</button>
+
+    <script>
+        document.getElementById('connectButton').addEventListener('click', async () => {
+            try {
+                const device = await navigator.usb.requestDevice({ filters: [] });
+                console.log('USB device selected:', device);
+                // Now you can communicate with the USB device using the WebUSB API
+            } catch (error) {
+                console.error('Error selecting USB device:', error);
+            }
+        });
+    </script>
+</body>
+</html>
