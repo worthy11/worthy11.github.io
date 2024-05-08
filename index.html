@@ -22,6 +22,11 @@
         document.getElementById('connectButton').addEventListener('click', async () => {
             const [device] = await navigator.hid.requestDevice({filters: [{ vendorId: 0x256c }]});
             device.open();
+            for (let collection of device.collections) {
+                for (let inputReport of collection.inputReports) {
+                    console.log(`Input report: ${inputReport.reportId}`);
+                }
+            }
             device.addEventListener("inputreport", event => {
                 document.getElementById('data').innerHTML = 'RECEIVED DATA';
                 document.getElementById('pen').innerHTML = 'Pen pressed: ';
