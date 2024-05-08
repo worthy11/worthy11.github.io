@@ -17,33 +17,29 @@
 
     <script>
         document.getElementById('connectButton').addEventListener('click', async () => {
+            const device = await navigator.usb.requestDevice({ filters: [{ vendorId: 0x256c }] });
+            document.getElementById('name').innerHTML = 'Device: ' + device.productName;
+            document.getElementById('man').innerHTML = 'Manufacturer: ' + device.manufacturerName;
+            try {
+                device.open();
+            } catch {
+                document.getElementById('errin').innerHTML = 'Error opening USB device: ' + error;
+            };
             try{
-                const device = await navigator.usb.requestDevice({ filters: [{ vendorId: 0x256c }] });
-                document.getElementById('name').innerHTML = 'Device: ' + device.productName;
-                document.getElementById('man').innerHTML = 'Manufacturer: ' + device.manufacturerName;
-                try {
-                    device.open();
-                } catch {
-                    document.getElementById('errin').innerHTML = 'Error opening USB device: ' + error;
-                };
-                try{
-                    device.selectConfiguration(0);
-                } catch {
-                    document.getElementById('errin').innerHTML = 'Error selecting configuration: ' + error;
-                };
+                device.selectConfiguration(0);
+            } catch {
+                document.getElementById('errin').innerHTML = 'Error selecting configuration: ' + error;
+            };
 
-                const endpointIn = device.configuration.interfaces[0].endpoints[0];
-                while (true) {
-                    try{
-                        const result = device.transferIn(endpointIn.endpointNumber, endpointIn.packetSize);
-                        const data = new Uint8Array(result.data.buffer);
-                        document.getElementById('data').innerHTML = 'Received data: ' + data;
-                    } catch {
-                         document.getElementById('errin').innerHTML = 'Error reading data: ' + error;
-                    };
-                }
-            } catch (error) {
-                document.getElementById('errout').innerHTML = 'Error connecting to USB device: ' + error;
+            const endpointIn = device.configuration.interfaces[0].endpoints[0];
+            while (true) {
+                try{
+                    const result = device.transferIn(endpointIn.endpointNumber, endpointIn.packetSize);
+                    const data = new Uint8Array(result.data.buffer);
+                    document.getElementById('data').innerHTML = 'Received data: ' + data;
+                } catch {
+                    document.getElementById('errin').innerHTML = 'Error reading data: ' + error;
+                };
             }
         });
 
