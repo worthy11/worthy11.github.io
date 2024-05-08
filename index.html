@@ -21,10 +21,10 @@
         async function connectToDevice() {
             try {
                 // Request permission to access the Huion HS610 tablet
-                usbDevice = await navigator.usb.requestDevice({ filters: [{ vendorId: 0x256c }] });
+                usbDevice = navigator.usb.requestDevice({ filters: [{ vendorId: 0x256c }] });
                 // Open the device and claim an interface
-                await usbDevice.open();
-                await usbDevice.claimInterface(0); // Assuming interface 0 is the correct one for data transfer
+                usbDevice.open();
+                usbDevice.claimInterface(0); // Assuming interface 0 is the correct one for data transfer
                 // Start reading data from the tablet
                 readData();
                 
@@ -39,7 +39,7 @@
                 const endpointIn = usbDevice.configuration.interfaces[0].endpoints[0]; // Adjust index as needed
                 // Start reading data from the input endpoint
                 while (true) {
-                    const result = await usbDevice.transferIn(endpointIn.endpointNumber, endpointIn.packetSize);
+                    const result = usbDevice.transferIn(endpointIn.endpointNumber, endpointIn.packetSize);
                     const data = new Uint8Array(result.data.buffer); // Convert to Uint8Array for easier processing
                     // Process the received data
                     processReceivedData(data);
