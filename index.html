@@ -15,15 +15,17 @@
     <p id="err"></p>
 
     <script>
-        const [device] = await navigator.hid.requestDevice({filters: [{ vendorId: 0x256c }]});
-        await device.open();
-        device.addEventListener("inputreport", event => {
-            const { data, device, reportId } = event;
+        document.getElementById('connectButton').addEventListener('click', async () => {
+            const [device] = await navigator.hid.requestDevice({filters: [{ vendorId: 0x256c }]});
+            await device.open();
+            device.addEventListener("inputreport", event => {
+                const { data, device, reportId } = event;
 
-            // const value = data.getUint8(0);
-            // if (value === 0) return;
+                // const value = data.getUint8(0);
+                // if (value === 0) return;
 
-            document.getElementById('data').innerHTML = `Received: ${data}`;
+                document.getElementById('data').innerHTML = `Received: ${data}`;
+            });
         });
     </script>
 </body>
