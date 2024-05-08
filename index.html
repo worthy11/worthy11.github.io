@@ -18,9 +18,9 @@
         document.getElementById('connectButton').addEventListener('click', async () => {
             try{
                 const device = await navigator.usb.requestDevice({ filters: [{ vendorId: 0x256c }] });
-                device.open(); // Begin a session.
                 document.getElementById('name').innerHTML = 'Device: ' + device.productName;
                 document.getElementById('man').innerHTML = 'Manufacturer: ' + device.manufacturerName;
+                device.open();
                 device.selectConfiguration(0);
 
                 const endpointIn = device.configuration.interfaces[0].endpoints[0];
