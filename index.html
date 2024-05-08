@@ -19,12 +19,12 @@
             const [device] = await navigator.hid.requestDevice({filters: [{ vendorId: 0x256c }]});
             device.open();
             device.addEventListener("inputreport", event => {
+                document.getElementById('data').innerHTML = `Bajo jajo: `;
                 const { data, device, reportId } = event;
                 
                 for (let step = 0; step < data.byteLength; step++) {
                     document.getElementById('data').innerHTML += `${data.getUint16(step)} `;
                 }
-                document.getElementById('data').innerHTML = `Received: `;
             });
         });
     </script>
