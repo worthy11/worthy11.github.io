@@ -12,7 +12,8 @@
     <p id="name"></p>
     <p id="man"></p>
     <p id="data"></p>
-    <p id="err"></p>
+    <p id="errin"></p>
+    <p id="errout"></p>
 
     <script>
         document.getElementById('connectButton').addEventListener('click', async () => {
@@ -22,13 +23,13 @@
                 document.getElementById('man').innerHTML = 'Manufacturer: ' + device.manufacturerName;
                 try {
                     device.open();
-                } catch{
-                    document.getElementById('err').innerHTML = 'Error opening USB device: ' + error;
+                } catch {
+                    document.getElementById('errin').innerHTML = 'Error opening USB device: ' + error;
                 };
                 try{
                     device.selectConfiguration(0);
                 } catch {
-                    document.getElementById('err').innerHTML = 'Error selecting configuration: ' + error;
+                    document.getElementById('errin').innerHTML = 'Error selecting configuration: ' + error;
                 };
 
                 const endpointIn = device.configuration.interfaces[0].endpoints[0];
@@ -38,11 +39,11 @@
                         const data = new Uint8Array(result.data.buffer);
                         document.getElementById('data').innerHTML = 'Received data: ' + data;
                     } catch {
-                         document.getElementById('err').innerHTML = 'Error reading data: ' + error;
+                         document.getElementById('errin').innerHTML = 'Error reading data: ' + error;
                     };
                 }
             } catch (error) {
-                document.getElementById('err').innerHTML = 'Error connecting to USB device: ' + error;
+                document.getElementById('errout').innerHTML = 'Error connecting to USB device: ' + error;
             }
         });
 
