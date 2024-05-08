@@ -11,7 +11,7 @@
     <p>Device information: </p>
     <p id="name"></p>
     <p id="man"></p>
-    <p id="data">Received: </p>
+    <p id="data">Received data: None</p>
     <p id="err"></p>
 
     <script>
@@ -19,11 +19,11 @@
             const [device] = await navigator.hid.requestDevice({filters: [{ vendorId: 0x256c }]});
             device.open();
             device.addEventListener("inputreport", event => {
-                document.getElementById('data').innerHTML = `Bajo jajo: `;
+                document.getElementById('data').innerHTML = `Received data: `;
                 const { data, device, reportId } = event;
                 
                 for (let step = 0; step < data.byteLength; step++) {
-                    document.getElementById('data').innerHTML += `${data.getUint16(step)} `;
+                    document.getElementById('data').innerHTML += `${data.getUint8(step)} `;
                 }
             });
         });
