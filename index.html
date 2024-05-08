@@ -9,7 +9,6 @@
     <button id="connectButton">Connect to USB Device</button>
 
     <p>Device information: </p>
-    <p id="dev"></p>
     <p id="name"></p>
     <p id="man"></p>
     <p id="data"></p>
@@ -24,6 +23,8 @@
                 usbDevice = navigator.usb.requestDevice({ filters: [{ vendorId: 0x256c }] });
                 // Open the device and claim an interface
                 usbDevice.open();
+                document.getElementById('name').innerHTML = 'Device: ' + device.productName;
+                document.getElementById('man').innerHTML = 'Manufacturer: ' + device.manufacturerName;
                 usbDevice.claimInterface(0); // Assuming interface 0 is the correct one for data transfer
                 // Start reading data from the tablet
                 readData();
