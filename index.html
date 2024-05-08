@@ -11,7 +11,11 @@
     <p>Device information: </p>
     <p id="name"></p>
     <p id="man"></p>
-    <p id="data">Received data: None</p>
+    <div id="data">Received data
+        <p id="pen">Pen pressed: </p>
+        <p id="xpos">X position: </p>
+        <p id="ypos">Y position: </p>
+    </div>
     <p id="err"></p>
 
     <script>
@@ -19,12 +23,19 @@
             const [device] = await navigator.hid.requestDevice({filters: [{ vendorId: 0x256c }]});
             device.open();
             device.addEventListener("inputreport", event => {
-                document.getElementById('data').innerHTML = `Received data: `;
+                document.getElementById('pressed').innerHTML = 'Pen pressed: ';
+                document.getElementById('xpos').innerHTML = 'X position: ';
+                document.getElementById('ypos').innerHTML = 'Y position: ';
+
                 const { data, device, reportId } = event;
                 
-                for (let step = 0; step < data.byteLength; step++) {
-                    document.getElementById('data').innerHTML += `${data.getUint8(step)} `;
-                }
+                const pressed = data.getUint8(0);
+                const xpos = data.getUint8(2) + data.getUint8(1) / 255.; 
+                const ypos = data.getUint8(3) + data.getUint8(4) / 255.;
+
+                document.getElementById('pressed').innerHTML += `${pressed == 129}`;
+                document.getElementById('xpos').innerHTML += `${xpos}`;
+                document.getElementById('ypos').innerHTML += `${ypos}`;
             });
         });
     </script>
