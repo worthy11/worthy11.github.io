@@ -20,11 +20,10 @@
             device.open();
             device.addEventListener("inputreport", event => {
                 const { data, device, reportId } = event;
-
-                // const value = data.getUint8(0);
-                // if (value === 0) return;
-
-                document.getElementById('data').innerHTML = `Received: ${data[0]}`;
+                
+                for (let step = 0; step < data.byteLength; step++) {
+                    document.getElementById('data').innerHTML += `Received: ${data.getUint16(step)} `;
+                }
             });
         });
     </script>
