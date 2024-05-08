@@ -8,17 +8,16 @@
 <body>
     <button id="connectButton">Connect to USB Device</button>
 
-    <br />
-    <div id="data">RECEIVED DATA: 
+    <br /><br />
+    <p id="data">RECEIVED DATA: 
         <!-- <p id="pen">Pen pressed: </p>
         <p id="xpos">X position: </p>
         <p id="ypos">Y position: </p> -->
-    </div>
-    <p id="err"></p>
+    </p>
 
     <script>
         document.getElementById('connectButton').addEventListener('click', async () => {
-            const [device] = await navigator.hid.requestDevice({filters: [{ vendorId: 0x256c }]});
+            const [device] = await navigator.hid.requestDevice(/* {filters: [{ vendorId: 0x256c }]} */);
             device.open();
             for (let collection of device.collections) {
                 console.log(`Usage: ${collection.usage}`);
