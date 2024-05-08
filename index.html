@@ -15,30 +15,48 @@
     <p id="data"></p>
 
     <script>
-        document.getElementById('connectButton').addEventListener('click', async () => {
+        let usbDevice;
+
+        async function connectToDevice() {
             try {
-
-                let device;
-
-                navigator.usb.requestDevice({ filters: [{ vendorId: 0x256c }] })
-                .then(selectedDevice => {
-                    device = selectedDevice;
-                    return device.open(); // Begin a session.
-                })
-                .then(() => document.getElementById('dev').innerHTML = 'USB device selected: ' + device)
-                .then(() => document.getElementById('name').innerHTML = 'Product name: ' + device.productName)
-                .then(() => document.getElementById('man').innerHTML = 'Manufacturer: ' + device.manufacturerName)
-                .then(() => device.transferIn(5, 64)) // Waiting for 64 bytes of data from endpoint #5.
-                .then(result => {
-                    const decoder = new TextDecoder();
-                    document.getElementById('data').innerHTML = 'Received: ' + decoder.decode(result.data);
-                })
-                .catch(error => { console.error(error); });
-
+                // Request permission to access the Huion HS610 tablet
+                usbDevice = await navigator.usb.requestDevice({ filters: [{ vendorId: 0x256c }] });
+                // Open the device and claim an interface
+                await usbDevice.open();
+                await usbDevice.claimInterface(0); // Assuming interface 0 is the correct one for data transfer
+                // Start reading data from the tablet
+                readData();
             } catch (error) {
-                console.error('Error selecting USB device:', error);
+                console.error('Error connecting to USB device:', error);
             }
-        });
+        }
+
+        async function readData() {
+            try {
+                // Select the input endpoint (check the Huion HS610 documentation for the correct endpoint)
+                const endpointIn = usbDevice.configuration.interfaces[0].endpoints[0]; // Adjust index as needed
+                // Start reading data from the input endpoint
+                while (true) {
+                    const result = await usbDevice.transferIn(endpointIn.endpointNumber, endpointIn.packetSize);
+                    const data = new Uint8Array(result.data.buffer); // Convert to Uint8Array for easier processing
+                    // Process the received data
+                    processReceivedData(data);
+                }
+            } catch (error) {
+                console.error('Error reading data from USB device:', error);
+            }
+        }
+
+        function processReceivedData(data) {
+            // Process the received data from the Huion HS610 tablet
+            console.log('Received data:', data);
+            // Parse and interpret the data as needed
+            // Example: Extract X and Y coordinates from the data
+        }
+
+        // Call the connectToDevice function to initiate the connection process
+        connectToDevice();
+ 
     </script>
 </body>
 </html>
