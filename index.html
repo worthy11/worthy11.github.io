@@ -17,7 +17,7 @@
     <script>
         document.getElementById('connectButton').addEventListener('click', async () => {
             const [device] = await navigator.hid.requestDevice({filters: [{ vendorId: 0x256c }]});
-            await device.open();
+            device.open();
             device.addEventListener("inputreport", event => {
                 const { data, device, reportId } = event;
 
