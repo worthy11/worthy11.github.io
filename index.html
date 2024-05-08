@@ -11,9 +11,10 @@
     <script>
         document.getElementById('connectButton').addEventListener('click', async () => {
             try {
-                const device = await navigator.usb.requestDevice({ filters: [] });
+                const device = await navigator.usb.requestDevice({ filters: [{vendorId: 0x256c}] });
                 console.log('USB device selected:', device);
-                // Now you can communicate with the USB device using the WebUSB API
+                console.log(device.productName);
+                console.log(device.manufacturerName);
             } catch (error) {
                 console.error('Error selecting USB device:', error);
             }
