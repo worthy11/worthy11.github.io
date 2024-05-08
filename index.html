@@ -15,6 +15,28 @@
     <p id="err"></p>
 
     <script>
+        try{
+            navigator.usb.requestDevice({ filters: [{ vendorId: 0x256c }] })
+            .then(selectedDevice => {
+                device = selectedDevice;
+                return device.open(); // Begin a session.
+            })
+            .then(() => {
+                document.getElementById('name').innerHTML = 'Device: ' + device.productName;
+                document.getElementById('man').innerHTML = 'Manufacturer: ' + device.manufacturerName;
+            })
+            .then(() => device.selectConfiguration(0));
+
+            const endpointIn = device.configuration.interfaces[0].endpoints[0];
+            while (true) {
+                const result = device.transferIn(endpointIn.endpointNumber, endpointIn.packetSize);
+                const data = new Uint8Array(result.data.buffer);
+                document.getElementById('data').innerHTML = 'Received data: ' + data;
+            }
+        } catch (error) {
+            document.getElementById('err').innerHTML = 'Error connecting to USB device: ' + error;
+        }
+
         let usbDevice;
 
         async function connectToDevice() {
