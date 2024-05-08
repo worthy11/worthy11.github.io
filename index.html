@@ -11,7 +11,7 @@
     <p>Device information: </p>
     <p id="name"></p>
     <p id="man"></p>
-    <div id="data">Received data
+    <div id="data">NO RECEIVED DATA
         <p id="pen">Pen pressed: </p>
         <p id="xpos">X position: </p>
         <p id="ypos">Y position: </p>
@@ -23,6 +23,7 @@
             const [device] = await navigator.hid.requestDevice({filters: [{ vendorId: 0x256c }]});
             device.open();
             device.addEventListener("inputreport", event => {
+                document.getElementById('data').innerHTML = 'RECEIVED DATA';
                 document.getElementById('pen').innerHTML = 'Pen pressed: ';
                 document.getElementById('xpos').innerHTML = 'X position: ';
                 document.getElementById('ypos').innerHTML = 'Y position: ';
