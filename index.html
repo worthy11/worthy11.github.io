@@ -28,14 +28,6 @@
                 .then(() => document.getElementById('dev').innerHTML = 'USB device selected: ' + device)
                 .then(() => document.getElementById('name').innerHTML = 'Product name: ' + device.productName)
                 .then(() => document.getElementById('man').innerHTML = 'Manufacturer: ' + device.manufacturerName)
-                .then(() => device.selectConfiguration(1)) // Select configuration #1 for the device.
-                .then(() => device.claimInterface(2)) // Request exclusive control over interface #2.
-                .then(() => device.controlTransferOut({
-                    requestType: 'class',
-                    recipient: 'interface',
-                    request: 0x22,
-                    value: 0x01,
-                    index: 0x02})) // Ready to receive data
                 .then(() => device.transferIn(5, 64)) // Waiting for 64 bytes of data from endpoint #5.
                 .then(result => {
                     const decoder = new TextDecoder();
