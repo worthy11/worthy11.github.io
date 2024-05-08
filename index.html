@@ -8,13 +8,11 @@
 <body>
     <button id="connectButton">Connect to USB Device</button>
 
-    <p>Device information: </p>
-    <p id="name"></p>
-    <p id="man"></p>
-    <div id="data">RECEIVED DATA
-        <p id="pen">Pen pressed: </p>
+    <br />
+    <div id="data">RECEIVED DATA: 
+        <!-- <p id="pen">Pen pressed: </p>
         <p id="xpos">X position: </p>
-        <p id="ypos">Y position: </p>
+        <p id="ypos">Y position: </p> -->
     </div>
     <p id="err"></p>
 
@@ -23,42 +21,40 @@
             const [device] = await navigator.hid.requestDevice({filters: [{ vendorId: 0x256c }]});
             device.open();
             for (let collection of device.collections) {
-                // An HID collection includes usage, usage page, reports, and subcollections.
                 console.log(`Usage: ${collection.usage}`);
                 console.log(`Usage page: ${collection.usagePage}`);
 
                 for (let inputReport of collection.inputReports) {
                     console.log(`Input report: ${inputReport.reportId}`);
-                    // Loop through inputReport.items
                 }
 
                 for (let outputReport of collection.outputReports) {
                     console.log(`Output report: ${outputReport.reportId}`);
-                    // Loop through outputReport.items
                 }
 
                 for (let featureReport of collection.featureReports) {
                     console.log(`Feature report: ${featureReport.reportId}`);
-                    // Loop through featureReport.items
                 }
-
-                // Loop through subcollections with collection.children
             }
 
             device.addEventListener("inputreport", event => {
-                document.getElementById('pen').innerHTML = 'Pen pressed: ';
-                document.getElementById('xpos').innerHTML = 'X position: ';
-                document.getElementById('ypos').innerHTML = 'Y position: ';
-
+                document.getElementById('data').innerHTML = 'RECEIVED DATA: ';
+                // document.getElementById('pen').innerHTML = 'Pen pressed: ';
+                // document.getElementById('xpos').innerHTML = 'X position: ';
+                // document.getElementById('ypos').innerHTML = 'Y position: ';
+                
                 const { data, device, reportId } = event;
                 
-                const pressed = data.getUint8(0);
-                const xpos = data.getUint8(2) + data.getUint8(1) / 255.; 
-                const ypos = data.getUint8(4) + data.getUint8(3) / 255.;
-
-                document.getElementById('pen').innerHTML += `${pressed == 129}`;
-                document.getElementById('xpos').innerHTML += `${xpos}`;
-                document.getElementById('ypos').innerHTML += `${ypos}`;
+                // const pressed = data.getUint8(0);
+                // const xpos = data.getUint8(2) + data.getUint8(1) / 255.; 
+                // const ypos = data.getUint8(4) + data.getUint8(3) / 255.;
+                
+                // document.getElementById('pen').innerHTML += `${pressed == 129}`;
+                // document.getElementById('xpos').innerHTML += `${xpos}`;
+                // document.getElementById('ypos').innerHTML += `${ypos}`;
+                for (let i = 0; i < data.byteLength; i++){
+                    document.getElementById('data').innerHTML += `${data.getUint8(i)} `;
+                }
             });
         });
     </script>
