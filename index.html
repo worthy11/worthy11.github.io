@@ -21,14 +21,13 @@
         async function connectToDevice() {
             try {
                 // Request permission to access the Huion HS610 tablet
-                document.getElementById('connectButton').addEventListener('click', async () => {
-                    usbDevice = await navigator.usb.requestDevice({ filters: [{ vendorId: 0x256c }] });
-                    // Open the device and claim an interface
-                    await usbDevice.open();
-                    await usbDevice.claimInterface(0); // Assuming interface 0 is the correct one for data transfer
-                    // Start reading data from the tablet
-                    readData();
-                }
+                usbDevice = await navigator.usb.requestDevice({ filters: [{ vendorId: 0x256c }] });
+                // Open the device and claim an interface
+                await usbDevice.open();
+                await usbDevice.claimInterface(0); // Assuming interface 0 is the correct one for data transfer
+                // Start reading data from the tablet
+                readData();
+                
             } catch (error) {
                 document.getElementById('err').innerHTML = 'Error connecting to USB device: ' + error;
             }
@@ -58,7 +57,9 @@
         }
 
         // Call the connectToDevice function to initiate the connection process
-        connectToDevice();
+        document.getElementById('connectButton').addEventListener('click', async () => {
+            connectToDevice();
+        })
  
     </script>
 </body>
