@@ -17,7 +17,7 @@
 
     <script>
         document.getElementById('connectButton').addEventListener('click', async () => {
-            const [device] = await navigator.hid.requestDevice(/* {filters: [{ vendorId: 0x256c }]} */);
+            const [device] = await navigator.hid.requestDevice({filters: [/*{ vendorId: 0x256c } */]});
             device.open();
             for (let collection of device.collections) {
                 console.log(`Usage: ${collection.usage}`);
