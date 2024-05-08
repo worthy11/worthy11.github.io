@@ -12,37 +12,19 @@
     <p id="name"></p>
     <p id="man"></p>
     <p id="data"></p>
-    <p id="errin"></p>
-    <p id="errout"></p>
+    <p id="err"></p>
 
     <script>
-        document.getElementById('connectButton').addEventListener('click', async () => {
-            const device = await navigator.usb.requestDevice({ filters: [{ vendorId: 0x256c }] });
-            document.getElementById('name').innerHTML = 'Device: ' + device.productName;
-            document.getElementById('man').innerHTML = 'Manufacturer: ' + device.manufacturerName;
-            try {
-                device.open();
-            } catch {
-                document.getElementById('errin').innerHTML = 'Error opening USB device: ' + error;
-            };
-            try{
-                device.selectConfiguration(0);
-            } catch {
-                document.getElementById('errin').innerHTML = 'Error selecting configuration: ' + error;
-            };
+        const [device] = await navigator.hid.requestDevice({filters: [{ vendorId: 0x256c }]});
+        await device.open();
+        device.addEventListener("inputreport", event => {
+            const { data, device, reportId } = event;
 
-            const endpointIn = device.configuration.interfaces[0].endpoints[0];
-            while (true) {
-                try{
-                    const result = device.transferIn(endpointIn.endpointNumber, endpointIn.packetSize);
-                    const data = new Uint8Array(result.data.buffer);
-                    document.getElementById('data').innerHTML = 'Received data: ' + data;
-                } catch {
-                    document.getElementById('errin').innerHTML = 'Error reading data: ' + error;
-                };
-            }
+            // const value = data.getUint8(0);
+            // if (value === 0) return;
+
+            document.getElementById('data').innerHTML = `Received: ${data}`;
         });
-
     </script>
 </body>
 </html>
