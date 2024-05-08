@@ -11,7 +11,7 @@
     <p>Device information: </p>
     <p id="name"></p>
     <p id="man"></p>
-    <p id="data"></p>
+    <p id="data">Received: </p>
     <p id="err"></p>
 
     <script>
@@ -21,10 +21,10 @@
             device.addEventListener("inputreport", event => {
                 const { data, device, reportId } = event;
                 
-                document.getElementById('err').innerHTML += `Size: ${data.byteLength}`;
                 for (let step = 0; step < data.byteLength; step++) {
-                    document.getElementById('data').innerHTML += `Received[${step}]: ${data.getUint16(step)} `;
+                    document.getElementById('data').innerHTML += `${data.getUint16(step)} `;
                 }
+                document.getElementById('data').innerHTML = `Received: `;
             });
         });
     </script>
