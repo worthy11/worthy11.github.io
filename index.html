@@ -22,7 +22,7 @@
                 const { data, device, reportId } = event;
                 
                 for (let step = 0; step < data.byteLength; step++) {
-                    document.getElementById('data').innerHTML += `Received: ${data.getUint16(step)} `;
+                    document.getElementById('data').innerHTML += `Received[${step}]: ${data.getUint16(step)} `;
                 }
             });
         });
