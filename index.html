@@ -72,26 +72,33 @@
     </div>
 
     <script>
-        var canvas = document.getElementById("canvas");
+        const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d");
-        ctx.fillStyle = "black";
-        ctx.lineWidth = 3;
-        const unit = canvas.height / 10;
-        const point_frequency = 1000;
-        const tracker_speed = 0.1;
+
         const tracker = document.getElementById("tracker");
         const tracker_ctx = tracker.getContext("2d");
+        ctx.fillStyle = "black";
+        ctx.lineWidth = 3;
         tracker_ctx.arc(7.5, 7.5, 7.5, 0, 2 * Math.PI);
         tracker_ctx.fillStyle = "black";
         tracker_ctx.fill();
         
+        // PARAMS
+        const unit = canvas.height / 10;
+        const point_frequency = 1000;
+        const tracker_speed = 0.5;
         var func_type = "square";
         var domain = 20, freq = 5, amp = 2;
         var coeff_a = 1, coeff_b = 1, coeff_c = 1;
+        // ADD SAMPLING FREQUENCY
+        // ADD SAMPLING TIME
+        // ADD RANDOM SPEED CHANGE
+        // ADD SPEED SETTING
+        
+        // INITIALIZE SETTINGS AND PLOT
         DisplaySettings(func_type);
         var points = GeneratePoints(func_type, domain, freq, amp);
         PlotPoints(ctx, points, domain, unit, amp);
-        // console.log(tracker.style.top, points[0][1], unit, canvas.height);
         tracker.style.top = `${canvas.height - points[0][1] * unit - tracker.height / 2}px`;
         
         var func_type_selector = document.getElementById("functype");

@@ -1,9 +1,3 @@
-function Initialize(ctx, unit, func_type, domain, freq, amp){
-    DisplaySettings(func_type);
-    var points = GeneratePoints(func_type, domain, freq, amp);
-    PlotPoints(ctx, points, domain, unit, amp);
-}
-
 function DisplaySettings(func_type){
     var settings = [document.getElementById("freq"),
                     document.getElementById("amp"),
@@ -46,11 +40,11 @@ function DisplaySettings(func_type){
     }
 }
 
-function PlotPoints(ctx, points, domain, unit, amp = 1){
-    var start = [canvas.width / 2 - domain / 2 * unit, canvas.height];
-
+function PlotPoints(ctx, points, domain, unit){
+    var start = [(canvas.width - domain*unit) / 2, canvas.height];
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
+
     var next = [start[0] + points[0][0] * unit, start[1] - points[0][1] * unit];
     ctx.moveTo(next[0], next[1]);
     for (const point of points){
@@ -61,21 +55,19 @@ function PlotPoints(ctx, points, domain, unit, amp = 1){
     ctx.stroke();
 }
 
-function GeneratePoints(type="square", domain=10, freq=1, amp=1, coeff_a=1, coeff_b=1, coeff_c=1, axis = 5){
+function GeneratePoints(type="square", domain=10, freq=1, amp=1, coeff_a=1, coeff_b=1, coeff_c=1, axis=5, point_freq=1000){
     var points = [];
-    const point_freq = 1000;
-    const elevation = axis;
     var dx = domain / point_freq;
 
     switch(type){
         case "square":
             var b = 2 * freq / domain;
-            for (let x = 0; x <= domain; x += dx) points.push([x, SquareWave(x, amp, b, elevation - amp / 2)]);
+            for (let x = 0; x <= domain; x += dx) points.push([x, SquareWave(x, amp, b, axis - amp / 2)]);
             break;
             
         case "sine":
             var b = 2 * Math.PI * freq / domain;
-            for (let x = 0; x <= domain; x += dx) points.push([x, SineWave(x, amp, b, elevation)]);
+            for (let x = 0; x <= domain; x += dx) points.push([x, SineWave(x, amp / 2, b, axis)]);
             break;
             
         case "parabola":
@@ -89,20 +81,21 @@ function GeneratePoints(type="square", domain=10, freq=1, amp=1, coeff_a=1, coef
     return points;
 }
 
-function SquareWave(x, a, b, c){ return -2*a * Math.floor(b/2 * x) + a * Math.floor(b * x) + c; } // freq = 
+function SquareWave(x, a, b, c){ return -2*a * Math.floor(b/2 * x) + a * Math.floor(b * x) + c; }
 function SineWave(x, a, b, c){ return a * Math.sin(b * x) + c; }
 function Parabola(x, a, b, c){ return a * Math.pow(x, 2) + b * x + c; }
 function Linear(x, a, b){ return a * x + b; }
 
 async function StartTracker(tracker, points, speed, unit){
     const eps = 0.00001;
+    
     for (var i = 0; i < points.length - 1; i++){
         var curr = points[i], next = points[i+1];
-        const vector = ComputeTrackerVector(speed, curr, next);
+        const vector = ComputeTrackerVector(curr, next);
         
         while ((curr[0] < next[0] - eps || curr[0] > next[0] + eps) || ((vector[1] >= 0 && curr[1] < next[1] - eps) || (vector[1] <= 0 && curr[1] > next[1] + eps))) {
-            curr[0] += vector[0];
-            curr[1] += vector[1];
+            curr[0] += vector[0] * speed;
+            curr[1] += vector[1] * speed;
             tracker.style.left = `${Math.max(curr[0] * unit - 7.5, 0)}px`;
             tracker.style.top = `${400-(curr[1] * unit + 7.5)}px`;
             
@@ -111,7 +104,7 @@ async function StartTracker(tracker, points, speed, unit){
     }
 }
 
-function ComputeTrackerVector(speed, curr, next){
+function ComputeTrackerVector(curr, next){
     return [(next[0] - curr[0]), (next[1] - curr[1])];
 }
 
