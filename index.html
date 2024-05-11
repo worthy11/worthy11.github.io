@@ -3,59 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebUSB Example</title>
+    <title>Pen Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="scripts.js"></script>
 </head>
 <body>
-    <button id="connectButton">Connect to USB Device</button>
+    <div class="wrapper">
+        <div class="widget settings">
+            <div class="widget-header">Ustawienia</div>
+            <div class="widget-content">
+                <div class="input-field">
+                    <div class="input-header" style="font-size: 15px;"><b>TYP FUNKCJI</b></div>
+                    <select id="functype">
+                        <option value="square">FALA SQUARE</option>
+                        <option value="sine">SINUSOIDA</option>
+                        <option value="parabola">PARABOLA</option>
+                        <option value="linear">PROSTA</option>
+                    </select>
+                </div>
 
-    <br /><br />
-    <p id="data">RECEIVED DATA: 
-        <!-- <p id="pen">Pen pressed: </p>
-        <p id="xpos">X position: </p>
-        <p id="ypos">Y position: </p> -->
-    </p>
+                <div id="domain" class="input-field">
+                    <div class="input-header">Dziedzina</div>
+                    <input id="domain_in" type='range' min='10' max='20' step="0.1" value="20">
+                    <div id="domain_display" style="float: left;">20</div>
+                </div>
+                <div id="freq" class="input-field">
+                    <div class="input-header">Częstotliwość</div>
+                    <input id="freq_in" type='range' min='1' max='10' step="0.1" value="5">
+                    <div id="freq_display" style="float: left;">5</div>
+                </div>
+                <div id="amp" class="input-field">
+                    <div class="input-header">Amplituda</div>
+                    <input id="amp_in" type='range' min='0' max='10' step="0.1" value="5">
+                    <div id="amp_display" style="float: left;">5</div>
+                </div>
+                <div id="a" class="input-field">
+                    <div class="input-header">A</div>
+                    <input id="a_in" type='number'>
+                </div>
+                <div id="b" class="input-field">
+                    <div class="input-header">B</div>
+                    <input id="b_in" type='number'>
+                </div>
+                <div id="c" class="input-field">
+                    <div class="input-header">C</div>
+                    <input id="c_in" type='number'>
+                </div><br/>
+                
+                <div class="input-field">
+                    <button id="plot">SZKICUJ</button><br /><br />
+                </div>
+            </div>
+        </div>
+
+        <div class="widget plot">
+            <div class="widget-header">Wykres</div>
+            <div style="position: relative;">
+                <canvas id="canvas" width="800" height="400" class="canvas" ></canvas>
+                <!-- <canvas id="tracker" width="100" height="100"  -->
+                  <!-- style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas> -->
+            </div>
+        </div>
+    </div>
 
     <script>
-        document.getElementById('connectButton').addEventListener('click', async () => {
-            const [device] = await navigator.hid.requestDevice({filters: [/*{ vendorId: 0x256c } */]});
-            device.open();
-            for (let collection of device.collections) {
-                console.log(`Usage: ${collection.usage}`);
-                console.log(`Usage page: ${collection.usagePage}`);
-
-                for (let inputReport of collection.inputReports) {
-                    console.log(`Input report: ${inputReport.reportId}`);
-                }
-
-                for (let outputReport of collection.outputReports) {
-                    console.log(`Output report: ${outputReport.reportId}`);
-                }
-
-                for (let featureReport of collection.featureReports) {
-                    console.log(`Feature report: ${featureReport.reportId}`);
-                }
-            }
-
-            device.addEventListener("inputreport", event => {
-                document.getElementById('data').innerHTML = 'RECEIVED DATA: ';
-                // document.getElementById('pen').innerHTML = 'Pen pressed: ';
-                // document.getElementById('xpos').innerHTML = 'X position: ';
-                // document.getElementById('ypos').innerHTML = 'Y position: ';
-                
-                const { data, device, reportId } = event;
-                
-                // const pressed = data.getUint8(0);
-                // const xpos = data.getUint8(2) + data.getUint8(1) / 255.; 
-                // const ypos = data.getUint8(4) + data.getUint8(3) / 255.;
-                
-                // document.getElementById('pen').innerHTML += `${pressed == 129}`;
-                // document.getElementById('xpos').innerHTML += `${xpos}`;
-                // document.getElementById('ypos').innerHTML += `${ypos}`;
-                for (let i = 0; i < data.byteLength; i++){
-                    document.getElementById('data').innerHTML += `${data.getUint8(i)} `;
-                }
-            });
+        var canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "black";
+        ctx.lineWidth = 3;
+        const unit = canvas.height / 10;
+        const point_frequency = 1000;
+        
+        var func_type = "square";
+        var domain = 20, freq = 5, amp = 2;
+        var coeff_a = 1, coeff_b = 1, coeff_c = 1;
+        Initialize(ctx, unit, func_type, domain, freq, amp);
+        
+        var func_type_selector = document.getElementById("functype");
+        func_type_selector.addEventListener("change", function(){
+            func_type = func_type_selector.value
+            DisplaySettings(func_type)
         });
-    </script>
+
+        var domain_setter = document.getElementById("domain_in");
+        domain_setter.addEventListener("change", function(){ 
+            domain = domain_setter.value;
+            document.getElementById("domain_display").innerHTML = domain;
+            let points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
+            PlotPoints(ctx, points, domain, unit, amp);
+        });
+        
+        var freq_setter = document.getElementById("freq_in");
+        freq_setter.addEventListener("change", function(){
+            freq = freq_setter.value;
+            document.getElementById("freq_display").innerHTML = freq;
+            let points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
+            PlotPoints(ctx, points, domain, unit, amp);
+        });
+        
+        var amp_setter = document.getElementById("amp_in");
+        amp_setter.addEventListener("change", function(){
+            amp = amp_setter.value;
+            document.getElementById("amp_display").innerHTML = amp;
+            let points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
+            PlotPoints(ctx, points, domain, unit, amp);
+        });
+        
+        var coeff_a_setter = document.getElementById("a_in");
+        coeff_a_setter.addEventListener("change", function(){
+            coeff_a = coeff_a_setter.value;
+            let points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
+            PlotPoints(ctx, points, domain, unit, amp);
+        });
+        
+        var coeff_b_setter = document.getElementById("b_in");
+        coeff_b_setter.addEventListener("change", function(){
+            coeff_b = coeff_b_setter.value;
+            let points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
+            PlotPoints(ctx, points, domain, unit, amp);
+        });
+        
+        var coeff_c_setter = document.getElementById("c_in");
+        coeff_c_setter.addEventListener("change", function(){
+            coeff_c = coeff_c_setter.value;
+            let points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
+            PlotPoints(ctx, points, domain, unit, amp);
+        });
+
+        var plot = document.getElementById("plot");
+        plot.addEventListener("click", function(){
+            let points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
+            PlotPoints(ctx, points, domain, unit, amp);
+        });
+        </script>
 </body>
 </html>

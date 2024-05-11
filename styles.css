@@ -1,0 +1,124 @@
+.wrapper
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    
+    margin: 30px auto;
+
+    font-family:'Trebuchet MS', sans-serif;
+}
+
+.widget
+{
+    overflow: hidden;
+
+    border-radius: 18px;
+    border-width: 3.5px;
+    border-style: solid;
+    border-color: rgb(78, 136, 243);
+
+    background-color: rgb(202, 220, 253);
+}
+
+.settings
+{
+    width: 15%;
+    height: fit-content;
+    margin: 50px 10px 0 0;
+}
+
+.plot
+{
+    width: 70%;
+    margin: 0 10px;
+}
+
+.widget-header
+{
+    padding: 5px;
+
+    background-color: rgb(78, 136, 243);
+
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+}
+
+.widget-content
+{
+    padding: 5px;
+
+    font-size: 13px;
+    font-weight: 300;
+    color: rgb(26, 56, 111);
+}
+
+.input-field
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    width: 85%;
+    margin: 15px auto;
+}
+
+.input-header
+{
+    width: 100%;
+    margin-bottom: 3px;
+
+    text-align: center;
+}
+
+.canvas
+{
+    border: 1px solid black;
+    
+    display: block;
+    margin: 10px auto;
+
+    background-color: white;
+}
+
+select
+{
+    border-radius: 5px;
+    
+    min-width: 60%;
+    padding: 5px;
+    
+    font-family: 'Trebuchet MS', sans-serif;
+    font-weight: lighter;
+    font-size: 12px;
+}
+
+button
+{
+    border-radius: 5px;
+    border-width: 2px;
+    border-color: gray;
+
+    min-width: 60%;
+    padding: 5px;
+    
+    background-color: white;
+
+    font-family: 'Trebuchet MS', sans-serif;
+    font-weight: bold;
+    font-size: 16px;
+
+    transition: all 0.2s ease-in-out;
+}
+
+button:hover
+{
+    border-color: transparent;
+
+    background-color: rgb(78, 136, 243);
+    
+    cursor: pointer;
+    color: white;
+}
