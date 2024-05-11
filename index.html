@@ -51,17 +51,22 @@
                 </div><br/>
                 
                 <div class="input-field">
-                    <button id="plot">SZKICUJ</button><br /><br />
+                    <button id="plot">SZKICUJ</button>
+                </div>
+
+                <div class="input-field">
+                    <button id="start">ROZPOCZNIJ</button><br /><br />
                 </div>
             </div>
         </div>
 
         <div class="widget plot">
             <div class="widget-header">Wykres</div>
-            <div style="position: relative;">
-                <canvas id="canvas" width="800" height="400" class="canvas" ></canvas>
-                <!-- <canvas id="tracker" width="100" height="100"  -->
-                  <!-- style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas> -->
+            <div class="widget-content">
+                <div class="canvas" style="position: relative; width: 800px; height: 400px;">
+                    <canvas id="tracker" width="15" height="15" style="position: absolute; top: 0; left: 0;"></canvas>
+                    <canvas id="canvas" width="800" height="400" style="position: absolute; top: 0; left: 0; right: 0; margin: auto;"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -73,11 +78,20 @@
         ctx.lineWidth = 3;
         const unit = canvas.height / 10;
         const point_frequency = 1000;
+        const tracker_speed = 0.1;
+        const tracker = document.getElementById("tracker");
+        const tracker_ctx = tracker.getContext("2d");
+        tracker_ctx.arc(7.5, 7.5, 7.5, 0, 2 * Math.PI);
+        tracker_ctx.fillStyle = "black";
+        tracker_ctx.fill();
         
         var func_type = "square";
         var domain = 20, freq = 5, amp = 2;
         var coeff_a = 1, coeff_b = 1, coeff_c = 1;
-        Initialize(ctx, unit, func_type, domain, freq, amp);
+        DisplaySettings(func_type);
+        var points = GeneratePoints(func_type, domain, freq, amp);
+        PlotPoints(ctx, points, domain, unit, amp);
+        tracker.style.top = `${canvas.height - points[0][1] * unit - tracker.height / 2}px`;
         
         var func_type_selector = document.getElementById("functype");
         func_type_selector.addEventListener("change", function(){
@@ -89,7 +103,7 @@
         domain_setter.addEventListener("change", function(){ 
             domain = domain_setter.value;
             document.getElementById("domain_display").innerHTML = domain;
-            let points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
+            points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
             PlotPoints(ctx, points, domain, unit, amp);
         });
         
@@ -97,7 +111,7 @@
         freq_setter.addEventListener("change", function(){
             freq = freq_setter.value;
             document.getElementById("freq_display").innerHTML = freq;
-            let points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
+            points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
             PlotPoints(ctx, points, domain, unit, amp);
         });
         
@@ -105,35 +119,40 @@
         amp_setter.addEventListener("change", function(){
             amp = amp_setter.value;
             document.getElementById("amp_display").innerHTML = amp;
-            let points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
+            points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
             PlotPoints(ctx, points, domain, unit, amp);
         });
         
         var coeff_a_setter = document.getElementById("a_in");
         coeff_a_setter.addEventListener("change", function(){
             coeff_a = coeff_a_setter.value;
-            let points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
+            points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
             PlotPoints(ctx, points, domain, unit, amp);
         });
         
         var coeff_b_setter = document.getElementById("b_in");
         coeff_b_setter.addEventListener("change", function(){
             coeff_b = coeff_b_setter.value;
-            let points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
+            points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
             PlotPoints(ctx, points, domain, unit, amp);
         });
         
         var coeff_c_setter = document.getElementById("c_in");
         coeff_c_setter.addEventListener("change", function(){
             coeff_c = coeff_c_setter.value;
-            let points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
+            points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
             PlotPoints(ctx, points, domain, unit, amp);
         });
-
+        
         var plot = document.getElementById("plot");
         plot.addEventListener("click", function(){
-            let points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
+            points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
             PlotPoints(ctx, points, domain, unit, amp);
+        });
+        
+        var start = document.getElementById("start");
+        start.addEventListener("click", function(){
+            StartTracker(tracker, points, tracker_speed, unit);
         });
         </script>
 </body>
