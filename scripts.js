@@ -40,7 +40,14 @@ function DisplaySettings(func_type){
     }
 }
 
-function PlotPoints(ctx, points, domain, unit){
+function PlotPoints(canvas, points, domain, unit, tracker){
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "black";
+    ctx.lineWidth = 3;
+
+    tracker.style.left = `${canvas.width / 2 - domain*unit / 2 - tracker.width / 2}px`;
+    tracker.style.top = `${canvas.height - points[0][1] * unit - tracker.height / 2}px`;
+
     var start = [(canvas.width - domain*unit) / 2, canvas.height];
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
@@ -86,27 +93,28 @@ function SineWave(x, a, b, c){ return a * Math.sin(b * x) + c; }
 function Parabola(x, a, b, c){ return a * Math.pow(x, 2) + b * x + c; }
 function Linear(x, a, b){ return a * x + b; }
 
-async function StartTracker(tracker, points, speed, unit){
-    const eps = 0.00001;
+async function StartTracker(records, tracker, points, speed, unit){
     var num_cycles = 0;
-    // document.onmousemove = HandleMouseMovement;
-    onmousemove = function(e){console.log("mouse location:", e.clientX, e.clientY)};
+    var cursor_pos = [0, 0];
+    onmousemove = function(e){cursor_pos = [e.clientX, e.clientY]};
     
+    await Countdown(3);
+
     for (var i = 0; i < points.length - 1; i++){
         var curr = points[i], next = points[i+1];
         const vector = ComputeTrackerVector(curr, next);
         
-        while ((curr[0] < next[0] - eps || curr[0] > next[0] + eps) || ((vector[1] >= 0 && curr[1] < next[1] - eps) || (vector[1] <= 0 && curr[1] > next[1] + eps))) {
-            const timestamp = num_cycles * 10 // MS;
+        while (curr[0] < next[0] && ((vector[1] > 0 && curr[1] <= next[1]) || (vector[1] < 0 && curr[1] >= next[1]) || (vector[1] == 0 && curr[1] == next[1]))) {
+            const timestamp = num_cycles * 10;
             const tracker_pos = tracker.getBoundingClientRect();
-            const cursor_pos = [];
+            records.push({timestamp: timestamp, tracker_x: tracker_pos.left, tracker_y: tracker_pos.top, mouse_x: cursor_pos[0], mouse_y: cursor_pos[1]});
+            curr[0] += vector[0];
+            curr[1] += vector[1];
+            tracker.style.left = `${curr[0] * unit - tracker.width / 2}px`;
+            tracker.style.top = `${400-(curr[1] * unit + tracker.height / 2)}px`;
+            console.log(curr[1], next[1], tracker.style.top);
             
-            curr[0] += vector[0] * speed;
-            curr[1] += vector[1] * speed;
-            tracker.style.left = `${Math.max(curr[0] * unit - 7.5, 0)}px`;
-            tracker.style.top = `${400-(curr[1] * unit + 7.5)}px`;
-            
-            await Sleep(10);
+            await Sleep(10 / speed);
             num_cycles++;
         }
     }
@@ -120,23 +128,28 @@ function Sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function HandleMouseMovement(event) {
-    var dot, eventDoc, doc, body, pageX, pageY;
-
-    event = event || window.event;
-
-    if (event.pageX == null && event.clientX != null) {
-        eventDoc = (event.target && event.target.ownerDocument) || document;
-        doc = eventDoc.documentElement;
-        body = eventDoc.body;
-
-        event.pageX = event.clientX +
-          (doc && doc.scrollLeft || body && body.scrollLeft || 0) -
-          (doc && doc.clientLeft || body && body.clientLeft || 0);
-          event.pageY = event.clientY +
-          (doc && doc.scrollTop  || body && body.scrollTop  || 0) -
-          (doc && doc.clientTop  || body && body.clientTop  || 0 );
+async function Countdown(seconds) {
+    const cd = document.getElementById("plot-title");
+    for (var t = seconds; t > 0; t--) {
+        cd.innerHTML = `&nbsp;Wykres
+        <div style="float: right; color: rgb(255, 220, 0);">Rozpoczęcie testu za: ${t}s</div>`;
+        await Sleep(1000);
     }
+    cd.innerHTML = "&nbspWykres";
+}
 
-    return [event.pageX, event.pageY];
+function ArrayToCSV(arr) {
+    const header = Object.keys(arr[0]).join(',');
+    const rows = arr.map(obj => Object.values(obj).join(','));
+    return header + '\n' + rows.join('\n');
+}
+
+function DownloadCSV(csvContent, fileName) {
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    window.URL.revokeObjectURL(url);
 }

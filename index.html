@@ -9,59 +9,8 @@
 </head>
 <body>
     <div class="wrapper">
-        <div class="widget settings">
-            <div class="widget-header">Ustawienia</div>
-            <div class="widget-content">
-                <div class="input-field">
-                    <div class="input-header" style="font-size: 15px;"><b>TYP FUNKCJI</b></div>
-                    <select id="functype">
-                        <option value="square">FALA SQUARE</option>
-                        <option value="sine">SINUSOIDA</option>
-                        <option value="parabola">PARABOLA</option>
-                        <option value="linear">PROSTA</option>
-                    </select>
-                </div>
-
-                <div id="domain" class="input-field">
-                    <div class="input-header">Dziedzina</div>
-                    <input id="domain_in" type='range' min='10' max='20' step="0.1" value="20">
-                    <div id="domain_display" style="float: left;">20</div>
-                </div>
-                <div id="freq" class="input-field">
-                    <div class="input-header">Częstotliwość</div>
-                    <input id="freq_in" type='range' min='1' max='10' step="0.1" value="5">
-                    <div id="freq_display" style="float: left;">5</div>
-                </div>
-                <div id="amp" class="input-field">
-                    <div class="input-header">Amplituda</div>
-                    <input id="amp_in" type='range' min='0' max='10' step="0.1" value="5">
-                    <div id="amp_display" style="float: left;">5</div>
-                </div>
-                <div id="a" class="input-field">
-                    <div class="input-header">A</div>
-                    <input id="a_in" type='number'>
-                </div>
-                <div id="b" class="input-field">
-                    <div class="input-header">B</div>
-                    <input id="b_in" type='number'>
-                </div>
-                <div id="c" class="input-field">
-                    <div class="input-header">C</div>
-                    <input id="c_in" type='number'>
-                </div><br/>
-                
-                <div class="input-field">
-                    <button id="plot">SZKICUJ</button>
-                </div>
-
-                <div class="input-field">
-                    <button id="start">ROZPOCZNIJ</button><br /><br />
-                </div>
-            </div>
-        </div>
-
         <div class="widget plot">
-            <div class="widget-header">Wykres</div>
+            <div id="plot-title" class="widget-header">&nbsp;Wykres</div>
             <div class="widget-content">
                 <div class="canvas" style="position: relative; width: 800px; height: 400px;">
                     <canvas id="tracker" width="15" height="15" style="position: absolute; top: 0; left: 0;"></canvas>
@@ -69,16 +18,90 @@
                 </div>
             </div>
         </div>
-    </div>
+
+        <div class="settings-wrapper">
+            <div class="widget settings">
+                <div class="widget-header">&nbsp;Ustawienia wykresu</div>
+                <div class="widget-content">
+                    <div class="input-field">
+                        <div class="input-header" style="font-size: 15px;"><b>TYP FUNKCJI</b></div>
+                        <select id="functype">
+                            <option value="square">FALA SQUARE</option>
+                            <option value="sine">SINUSOIDA</option>
+                            <option value="parabola">PARABOLA</option>
+                            <option value="linear">PROSTA</option>
+                        </select>
+                    </div>
+    
+                    <div id="domain" class="input-field" style="display: none;">
+                        <div class="input-header">Dziedzina</div>
+                        <input id="domain_in" type='range' min='10' max='20' step="0.1" value="20">
+                        <div id="domain_display" style="float: left;">20</div>
+                    </div>
+                    <div id="freq" class="input-field">
+                        <div class="input-header">Częstotliwość</div>
+                        <input id="freq_in" type='range' min='1' max='10' step="0.1" value="5">
+                        <div id="freq_display" style="float: left;">5</div>
+                    </div>
+                    <div id="amp" class="input-field">
+                        <div class="input-header">Amplituda</div>
+                        <input id="amp_in" type='range' min='0' max='10' step="0.1" value="5">
+                        <div id="amp_display" style="float: left;">5</div>
+                    </div>
+                    <div id="a" class="input-field">
+                        <div class="input-header">A</div>
+                        <input id="a_in" type='number' step="0.01">
+                    </div>
+                    <div id="b" class="input-field">
+                        <div class="input-header">B</div>
+                        <input id="b_in" type='number' step="0.01">
+                    </div>
+                    <div id="c" class="input-field">
+                        <div class="input-header">C</div>
+                        <input id="c_in" type='number' step="0.01">
+                    </div><br/>
+                    
+                    <div class="input-field">
+                        <button id="start">ROZPOCZNIJ</button>
+                    </div>
+    
+                    <div class="input-field">
+                        <button id="download">POBIERZ WYNIK</button>
+                        <div id="download_error" class="input-header" style="color: red;"></div>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="widget settings">
+                <div class="widget-header">&nbsp;Ustawienia badania</div>
+                <div class="widget-content">
+                    <div id="speed" class="input-field">
+                        <div class="input-header">Prędkość punktu</div>
+                        <select id="speed_in">
+                            <option value="low">NISKA</option>
+                            <option value="medium" selected="selected">ŚREDNIA</option>
+                            <option value="high">WYSOKA</option>
+                        </select>
+                    </div>
+                    <div id="rand" class="input-field">
+                        <div class="input-header">Szansa zmiany prędkości</div>
+                        <input id="rand_in" type='range' min='0' max='100' value="20">
+                        <div id="rand_display" style="float: left;">20%</div>
+                    </div>
+                    <div id="time" class="input-field">
+                        <div class="input-header">Czas badania</div>
+                        <input id="time_in" type='range' min='0' max='20' value="10">
+                        <div id="time_display" style="float: left;">10s</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><br /><br />
 
     <script>
         const canvas = document.getElementById("canvas");
-        const ctx = canvas.getContext("2d");
-
         const tracker = document.getElementById("tracker");
         const tracker_ctx = tracker.getContext("2d");
-        ctx.fillStyle = "black";
-        ctx.lineWidth = 3;
         tracker_ctx.arc(7.5, 7.5, 7.5, 0, 2 * Math.PI);
         tracker_ctx.fillStyle = "black";
         tracker_ctx.fill();
@@ -86,81 +109,105 @@
         // PARAMS
         const unit = canvas.height / 10;
         const point_frequency = 1000;
-        const tracker_speed = 0.5;
         var func_type = "square";
         var domain = 20, freq = 5, amp = 2;
         var coeff_a = 1, coeff_b = 1, coeff_c = 1;
-        // ADD SAMPLING FREQUENCY
-        // ADD SAMPLING TIME
-        // ADD RANDOM SPEED CHANGE
-        // ADD SPEED SETTING
+        var speed = 1, rand = 0.2, time = 10;
         
         // INITIALIZE SETTINGS AND PLOT
         DisplaySettings(func_type);
         var points = GeneratePoints(func_type, domain, freq, amp);
-        PlotPoints(ctx, points, domain, unit, amp);
-        tracker.style.top = `${canvas.height - points[0][1] * unit - tracker.height / 2}px`;
+        PlotPoints(canvas, points, domain, unit, tracker);
         
         var func_type_selector = document.getElementById("functype");
         func_type_selector.addEventListener("change", function(){
             func_type = func_type_selector.value
             DisplaySettings(func_type)
+            points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
+            PlotPoints(canvas, points, domain, unit, tracker);
         });
 
-        var domain_setter = document.getElementById("domain_in");
-        domain_setter.addEventListener("change", function(){ 
-            domain = domain_setter.value;
+        document.getElementById("domain_in").oninput = function() { 
+            domain = this.value;
             document.getElementById("domain_display").innerHTML = domain;
             points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
-            PlotPoints(ctx, points, domain, unit, amp);
-        });
+            PlotPoints(canvas, points, domain, unit, tracker);
+        };
         
-        var freq_setter = document.getElementById("freq_in");
-        freq_setter.addEventListener("change", function(){
-            freq = freq_setter.value;
+        document.getElementById("freq_in").oninput = function() {
+            freq = this.value;
             document.getElementById("freq_display").innerHTML = freq;
             points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
-            PlotPoints(ctx, points, domain, unit, amp);
-        });
+            PlotPoints(canvas, points, domain, unit, tracker);
+        };
         
-        var amp_setter = document.getElementById("amp_in");
-        amp_setter.addEventListener("change", function(){
-            amp = amp_setter.value;
+        document.getElementById("amp_in").oninput = function() {
+            amp = this.value;
             document.getElementById("amp_display").innerHTML = amp;
             points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
-            PlotPoints(ctx, points, domain, unit, amp);
-        });
+            PlotPoints(canvas, points, domain, unit, tracker);
+        };
         
-        var coeff_a_setter = document.getElementById("a_in");
-        coeff_a_setter.addEventListener("change", function(){
-            coeff_a = coeff_a_setter.value;
+        document.getElementById("a_in").oninput = function() {
+            coeff_a = this.value;
             points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
-            PlotPoints(ctx, points, domain, unit, amp);
-        });
+            PlotPoints(canvas, points, domain, unit, tracker);
+        };
         
-        var coeff_b_setter = document.getElementById("b_in");
-        coeff_b_setter.addEventListener("change", function(){
-            coeff_b = coeff_b_setter.value;
+        document.getElementById("b_in").oninput = function() {
+            coeff_b = this.value;
             points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
-            PlotPoints(ctx, points, domain, unit, amp);
-        });
+            PlotPoints(canvas, points, domain, unit, tracker);
+        };
         
-        var coeff_c_setter = document.getElementById("c_in");
-        coeff_c_setter.addEventListener("change", function(){
-            coeff_c = coeff_c_setter.value;
+        document.getElementById("c_in").oninput = function() {
+            coeff_c = this.value;
             points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
-            PlotPoints(ctx, points, domain, unit, amp);
-        });
+            PlotPoints(canvas, points, domain, unit, tracker);
+        };
+
+        document.getElementById("speed_in").oninput = function() {
+            speed = this.value;
+            switch(speed){
+                case "low":
+                    speed = 0.5;
+                    break;
+
+                case "medium":
+                    speed = 1;
+                    break;
+
+                case "high":
+                    speed = 2;
+                    break;
+            }
+        };
+
+        document.getElementById("rand_in").oninput = function() {
+            rand = this.value;
+            document.getElementById("rand_display").innerHTML = rand + "%";
+        };
         
-        var plot = document.getElementById("plot");
-        plot.addEventListener("click", function(){
-            points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
-            PlotPoints(ctx, points, domain, unit, amp);
-        });
+        document.getElementById("time_in").oninput = function() {
+            time = this.value;
+            document.getElementById("time_display").innerHTML = time + "s";
+        };
         
         var start = document.getElementById("start");
+        var records = [];
         start.addEventListener("click", function(){
-            StartTracker(tracker, points, tracker_speed, unit);
+            StartTracker(records, tracker, points, speed, unit);
+        });
+
+        var download = document.getElementById("download");
+        download.addEventListener("click", function(){
+            if (records.length > 0) {
+                document.getElementById("download_error").innerHTML = "";
+                csv = ArrayToCSV(records);
+                DownloadCSV(csv, 'records.csv');
+            } else {
+                document.getElementById("download_error").innerHTML = "Brak danych do pobrania";
+            }
         });
         </script>
 </body>

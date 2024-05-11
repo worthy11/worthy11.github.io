@@ -13,25 +13,58 @@
 {
     overflow: hidden;
 
+    margin: 0 10px;
+    
     border-radius: 18px;
     border-width: 3.5px;
     border-style: solid;
     border-color: rgb(78, 136, 243);
-
+    
     background-color: rgb(202, 220, 253);
+}
+
+.settings-wrapper
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    width: 640px;
 }
 
 .settings
 {
-    width: 15%;
-    height: fit-content;
-    margin: 50px 10px 0 0;
+    width: 300px;
 }
 
 .plot
 {
-    width: 70%;
-    margin: 0 10px;
+    width: 814px;
+    height: fit-content;
+}
+
+@media (max-width: 1520px)
+{
+    .wrapper
+    {
+        flex-direction: column;
+    }
+
+    .settings-wrapper
+    {
+        margin: 10px auto;
+    }
+
+    .settings
+    {
+        width: 300px;
+    }
+
+
+    .plot
+    {
+        margin: 10px auto;
+    }
 }
 
 .widget-header
@@ -48,7 +81,6 @@
 .widget-content
 {
     padding: 5px;
-
 
     font-size: 13px;
     font-weight: 300;
