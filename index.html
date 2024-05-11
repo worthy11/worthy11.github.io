@@ -96,6 +96,15 @@
                 </div>
             </div>
         </div>
+
+        <div class="widget plot">
+            <div class="widget-header">&nbsp;Wynik</div>
+            <div class="widget-content">
+                <div class="canvas" style="position: relative; width: 800px; height: 400px;">
+                    <canvas id="result" width="800" height="400" style="position: absolute; top: 0; left: 0; right: 0; margin: auto;"></canvas>
+                </div>
+            </div>
+        </div>
     </div><br /><br />
 
     <script>
@@ -195,8 +204,10 @@
         
         var start = document.getElementById("start");
         var records = [];
-        start.addEventListener("click", function(){
-            StartTracker(records, tracker, points, speed, unit);
+        start.addEventListener("click", async function(){
+            var results = await StartTracker(records, tracker, points, speed, unit);
+            PlotResults(points, results, domain, amp, unit);
+            console.log("plotted");
         });
 
         var download = document.getElementById("download");

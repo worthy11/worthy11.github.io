@@ -96,6 +96,7 @@ function Linear(x, a, b){ return a * x + b; }
 async function StartTracker(records, tracker, points, speed, unit){
     var num_cycles = 0;
     var cursor_pos = [0, 0];
+    var results = []
     onmousemove = function(e){cursor_pos = [e.clientX, e.clientY]};
     
     await Countdown(3);
@@ -108,16 +109,18 @@ async function StartTracker(records, tracker, points, speed, unit){
             const timestamp = num_cycles * 10;
             const tracker_pos = tracker.getBoundingClientRect();
             records.push({timestamp: timestamp, tracker_x: tracker_pos.left, tracker_y: tracker_pos.top, mouse_x: cursor_pos[0], mouse_y: cursor_pos[1]});
+            results.push([cursor_pos[0], cursor_pos[1]]);
+
             curr[0] += vector[0];
             curr[1] += vector[1];
             tracker.style.left = `${curr[0] * unit - tracker.width / 2}px`;
             tracker.style.top = `${400-(curr[1] * unit + tracker.height / 2)}px`;
-            console.log(curr[1], next[1], tracker.style.top);
             
             await Sleep(10 / speed);
             num_cycles++;
         }
     }
+    return results;
 }
 
 function ComputeTrackerVector(curr, next){
@@ -152,4 +155,27 @@ function DownloadCSV(csvContent, fileName) {
     a.download = fileName;
     a.click();
     window.URL.revokeObjectURL(url);
+}
+
+function PlotResults(expected, observed, domain, amp, unit){
+    const ctx = document.getElementById("result").getContext("2d");
+    ctx.fillStyle = "black";
+    ctx.lineWidth = 1;
+    const canvas = document.getElementById("canvas").getBoundingClientRect();
+    for (var point of observed){
+        point[0] = (point[0] - canvas.left) / (domain * unit);
+        point[1] = (point[1] - canvas.top) / (amp * unit);
+    }
+
+    ctx.clearRect(0, 0, 800, 400);
+    ctx.beginPath();
+
+    ctx.moveTo(0, 0);
+    for (const point of observed){
+        var next = [point[0] * unit, point[1] * unit];
+        console.log(next[0], next[1]);
+        ctx.lineTo(next[0], next[1]);
+        ctx.moveTo(next[0], next[1]);
+    };
+    ctx.stroke();
 }
