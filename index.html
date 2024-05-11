@@ -91,7 +91,7 @@
         DisplaySettings(func_type);
         var points = GeneratePoints(func_type, domain, freq, amp);
         PlotPoints(ctx, points, domain, unit, amp);
-        console.log(tracker.style.top, points[0][1], unit, canvas.height);
+        // console.log(tracker.style.top, points[0][1], unit, canvas.height);
         tracker.style.top = `${canvas.height - points[0][1] * unit - tracker.height / 2}px`;
         
         var func_type_selector = document.getElementById("functype");
