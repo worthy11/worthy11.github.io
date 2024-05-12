@@ -40,7 +40,7 @@ function DisplaySettings(func_type){
     }
 }
 
-function PlotPoints(canvas, points, domain, unit, tracker){
+function PlotPoints(canvas, points, domain, unit, tracker = document.getElementById("tracker")){
     const ctx = canvas.getContext("2d");
     ctx.fillStyle = "black";
     ctx.lineWidth = 3;
@@ -96,11 +96,11 @@ function Linear(x, a, b){ return a * x + b; }
 async function StartTracker(records, tracker, points, speed, unit){
     var num_cycles = 0;
     var cursor_pos = [0, 0];
-    var results = []
     onmousemove = function(e){cursor_pos = [e.clientX, e.clientY]};
     
     await Countdown(3);
-
+    
+    const canvas_pos = document.getElementById("canvas").getBoundingClientRect();
     for (var i = 0; i < points.length - 1; i++){
         var curr = points[i], next = points[i+1];
         const vector = ComputeTrackerVector(curr, next);
@@ -108,8 +108,12 @@ async function StartTracker(records, tracker, points, speed, unit){
         while (curr[0] < next[0] && ((vector[1] > 0 && curr[1] <= next[1]) || (vector[1] < 0 && curr[1] >= next[1]) || (vector[1] == 0 && curr[1] == next[1]))) {
             const timestamp = num_cycles * 10;
             const tracker_pos = tracker.getBoundingClientRect();
-            records.push({timestamp: timestamp, tracker_x: tracker_pos.left, tracker_y: tracker_pos.top, mouse_x: cursor_pos[0], mouse_y: cursor_pos[1]});
-            results.push([cursor_pos[0], cursor_pos[1]]);
+
+            records.push({timestamp: timestamp,
+                tracker_x: tracker_pos.left + 7.5 - canvas_pos.left,
+                tracker_y: tracker_pos.top + 7.5 - canvas_pos.top,
+                mouse_x: cursor_pos[0] - canvas_pos.left,
+                mouse_y: cursor_pos[1] - canvas_pos.top});
 
             curr[0] += vector[0];
             curr[1] += vector[1];
@@ -120,7 +124,6 @@ async function StartTracker(records, tracker, points, speed, unit){
             num_cycles++;
         }
     }
-    return results;
 }
 
 function ComputeTrackerVector(curr, next){
@@ -157,25 +160,20 @@ function DownloadCSV(csvContent, fileName) {
     window.URL.revokeObjectURL(url);
 }
 
-function PlotResults(expected, observed, domain, amp, unit){
-    const ctx = document.getElementById("result").getContext("2d");
-    ctx.fillStyle = "black";
-    ctx.lineWidth = 1;
-    const canvas = document.getElementById("canvas").getBoundingClientRect();
-    for (var point of observed){
-        point[0] = (point[0] - canvas.left) / (domain * unit);
-        point[1] = (point[1] - canvas.top) / (amp * unit);
-    }
+function PlotResults(canvas, results){
+    const ctx = canvas.getContext("2d");
 
-    ctx.clearRect(0, 0, 800, 400);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
+    for (const record of results){
+        const x = record.timestamp * 800 / results[results.length - 1].timestamp;
+        const y_e = record.tracker_y;
+        const y_o = record.mouse_y;
 
-    ctx.moveTo(0, 0);
-    for (const point of observed){
-        var next = [point[0] * unit, point[1] * unit];
-        console.log(next[0], next[1]);
-        ctx.lineTo(next[0], next[1]);
-        ctx.moveTo(next[0], next[1]);
+        ctx.fillStyle = "green";
+        ctx.fillRect(x, y_e, 2, 2);
+        ctx.fillStyle = "red";
+        ctx.fillRect(x, y_o, 2, 2);
     };
     ctx.stroke();
 }

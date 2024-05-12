@@ -67,7 +67,7 @@
     
                     <div class="input-field">
                         <button id="download">POBIERZ WYNIK</button>
-                        <div id="download_error" class="input-header" style="color: red;"></div>
+                        <div id="download-error" class="input-header" style="color: red;"></div>
                     </div>
                 </div>
             </div>
@@ -97,7 +97,7 @@
             </div>
         </div>
 
-        <div class="widget plot">
+        <div id="result-widget" class="widget plot" style="display: none;">
             <div class="widget-header">&nbsp;Wynik</div>
             <div class="widget-content">
                 <div class="canvas" style="position: relative; width: 800px; height: 400px;">
@@ -109,6 +109,7 @@
 
     <script>
         const canvas = document.getElementById("canvas");
+        const result = document.getElementById("result");
         const tracker = document.getElementById("tracker");
         const tracker_ctx = tracker.getContext("2d");
         tracker_ctx.arc(7.5, 7.5, 7.5, 0, 2 * Math.PI);
@@ -205,19 +206,22 @@
         var start = document.getElementById("start");
         var records = [];
         start.addEventListener("click", async function(){
-            var results = await StartTracker(records, tracker, points, speed, unit);
-            PlotResults(points, results, domain, amp, unit);
-            console.log("plotted");
+            records = [];
+            scroll(0,0);
+            
+            await StartTracker(records, tracker, points, speed, unit)
+            document.getElementById("result-widget").style.display = "block";
+            PlotResults(result, records);
         });
 
         var download = document.getElementById("download");
         download.addEventListener("click", function(){
             if (records.length > 0) {
-                document.getElementById("download_error").innerHTML = "";
+                document.getElementById("download-error").innerHTML = "";
                 csv = ArrayToCSV(records);
                 DownloadCSV(csv, 'records.csv');
             } else {
-                document.getElementById("download_error").innerHTML = "Brak danych do pobrania";
+                document.getElementById("download-error").innerHTML = "Brak danych do pobrania";
             }
         });
         </script>
