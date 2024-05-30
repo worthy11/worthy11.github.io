@@ -30,6 +30,7 @@
                             <option value="sine">SINUSOIDA</option>
                             <option value="parabola">PARABOLA</option>
                             <option value="linear">PROSTA</option>
+                            <option value="spiral">SPIRALA</option>
                         </select>
                     </div>
     
@@ -59,6 +60,11 @@
                     <div id="c" class="input-field">
                         <div class="input-header">C</div>
                         <input id="c_in" type='number' step="0.01">
+                    </div>
+                    <div id="alpha" class="input-field">
+                        <div class="input-header">Szerokość</div>
+                        <input id="alpha_in" type='range' min='0.15' max='0.25' step="0.01" value="0.2">
+                        <div id="alpha_display" style="float: left;">0.2</div>
                     </div><br/>
                     
                     <div class="input-field">
@@ -121,7 +127,7 @@
         const point_frequency = 1000;
         var func_type = "square";
         var domain = 20, freq = 5, amp = 2;
-        var coeff_a = 1, coeff_b = 1, coeff_c = 1;
+        var coeff_a = 1, coeff_b = 1, coeff_c = 1, alpha = 0.2;
         var speed = 1, rand = 0.2, time = 10;
         
         // INITIALIZE SETTINGS AND PLOT
@@ -133,46 +139,53 @@
         func_type_selector.addEventListener("change", function(){
             func_type = func_type_selector.value
             DisplaySettings(func_type)
-            points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
+            points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c, alpha);
             PlotPoints(canvas, points, domain, unit, tracker);
         });
 
         document.getElementById("domain_in").oninput = function() { 
             domain = this.value;
             document.getElementById("domain_display").innerHTML = domain;
-            points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
+            points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c, alpha);
             PlotPoints(canvas, points, domain, unit, tracker);
         };
         
         document.getElementById("freq_in").oninput = function() {
             freq = this.value;
             document.getElementById("freq_display").innerHTML = freq;
-            points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
+            points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c, alpha);
             PlotPoints(canvas, points, domain, unit, tracker);
         };
         
         document.getElementById("amp_in").oninput = function() {
             amp = this.value;
             document.getElementById("amp_display").innerHTML = amp;
-            points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
+            points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c, alpha);
             PlotPoints(canvas, points, domain, unit, tracker);
         };
         
         document.getElementById("a_in").oninput = function() {
             coeff_a = this.value;
-            points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
+            points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c, alpha);
             PlotPoints(canvas, points, domain, unit, tracker);
         };
         
         document.getElementById("b_in").oninput = function() {
             coeff_b = this.value;
-            points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
+            points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c, alpha);
             PlotPoints(canvas, points, domain, unit, tracker);
         };
         
         document.getElementById("c_in").oninput = function() {
             coeff_c = this.value;
-            points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c);
+            points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c, alpha);
+            PlotPoints(canvas, points, domain, unit, tracker);
+        };
+        
+        document.getElementById("alpha_in").oninput = function() {
+            alpha = this.value;
+            document.getElementById("alpha_display").innerHTML = alpha;
+            points = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c, alpha);
             PlotPoints(canvas, points, domain, unit, tracker);
         };
 
@@ -209,9 +222,9 @@
             records = [];
             scroll(0,0);
             
-            await StartTracker(records, tracker, points, speed, unit)
+            await StartTracker(records, canvas, tracker, points, speed, unit);
             document.getElementById("result-widget").style.display = "block";
-            PlotResults(result, records);
+            PlotResults(result, records, unit);
         });
 
         var download = document.getElementById("download");

@@ -1,9 +1,10 @@
 function DisplaySettings(func_type){
-    var settings = [document.getElementById("freq"),
+    const settings = [document.getElementById("freq"),
                     document.getElementById("amp"),
                     document.getElementById("a"),
                     document.getElementById("b"),
-                    document.getElementById("c")];
+                    document.getElementById("c"),
+                    document.getElementById("alpha")];
 
     switch (func_type){
         case "square":
@@ -12,6 +13,7 @@ function DisplaySettings(func_type){
             settings[2].style.display = "none";
             settings[3].style.display = "none";
             settings[4].style.display = "none";
+            settings[5].style.display = "none";
             break;
             
         case "sine":
@@ -20,6 +22,7 @@ function DisplaySettings(func_type){
             settings[2].style.display = "none";
             settings[3].style.display = "none";
             settings[4].style.display = "none";
+            settings[5].style.display = "none";
             break;
             
         case "parabola":
@@ -28,6 +31,7 @@ function DisplaySettings(func_type){
             settings[2].style.display = "flex";
             settings[3].style.display = "flex";
             settings[4].style.display = "flex";
+            settings[5].style.display = "none";
             break;
             
         case "linear":
@@ -36,44 +40,56 @@ function DisplaySettings(func_type){
             settings[2].style.display = "flex";
             settings[3].style.display = "flex";
             settings[4].style.display = "none";
+            settings[5].style.display = "none";
+            break;
+            
+        case "spiral":
+            settings[0].style.display = "none";
+            settings[1].style.display = "none";
+            settings[2].style.display = "none";
+            settings[3].style.display = "none";
+            settings[4].style.display = "none";
+            settings[5].style.display = "flex";
             break;
     }
 }
 
 function PlotPoints(canvas, points, domain, unit, tracker = document.getElementById("tracker")){
     const ctx = canvas.getContext("2d");
+    ctx.imageSmoothingEnabled = false;
     ctx.fillStyle = "black";
     ctx.lineWidth = 3;
 
-    tracker.style.left = `${canvas.width / 2 - domain*unit / 2 - tracker.width / 2}px`;
+    tracker.style.left = `${points[0][0] * unit - tracker.width / 2}px`;
     tracker.style.top = `${canvas.height - points[0][1] * unit - tracker.height / 2}px`;
 
-    var start = [(canvas.width - domain*unit) / 2, canvas.height];
+    const start = [(canvas.width - domain*unit) / 2, canvas.height];
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
 
-    var next = [start[0] + points[0][0] * unit, start[1] - points[0][1] * unit];
+    let next = [start[0] + points[0][0] * unit, start[1] - points[0][1] * unit];
     ctx.moveTo(next[0], next[1]);
     for (const point of points){
-        var next = [start[0] + point[0] * unit, start[1] - point[1] * unit];
+        next = [start[0] + point[0] * unit, start[1] - point[1] * unit];
         ctx.lineTo(next[0], next[1]);
         ctx.moveTo(next[0], next[1]);
     };
     ctx.stroke();
 }
 
-function GeneratePoints(type="square", domain=10, freq=1, amp=1, coeff_a=1, coeff_b=1, coeff_c=1, axis=5, point_freq=1000){
-    var points = [];
-    var dx = domain / point_freq;
+function GeneratePoints(type="square", domain=10, freq=1, amp=1, coeff_a=1, coeff_b=1, coeff_c=1, alpha=0.2, axis=5, point_freq=1000){
+    let points = [];
+    let b = 0;
+    const dx = domain / point_freq;
 
     switch(type){
         case "square":
-            var b = 2 * freq / domain;
+            b = 2 * freq / domain;
             for (let x = 0; x <= domain; x += dx) points.push([x, SquareWave(x, amp, b, axis - amp / 2)]);
             break;
             
         case "sine":
-            var b = 2 * Math.PI * freq / domain;
+            b = 2 * Math.PI * freq / domain;
             for (let x = 0; x <= domain; x += dx) points.push([x, SineWave(x, amp / 2, b, axis)]);
             break;
             
@@ -82,8 +98,11 @@ function GeneratePoints(type="square", domain=10, freq=1, amp=1, coeff_a=1, coef
             break;
             
         case "linear":
-            for (let x = 0; x <= domain; x += dx) points.push([x, Parabola(x, coeff_a, coeff_b)]);
+            for (let x = 0; x <= domain; x += dx) points.push([x, Linear(x, coeff_a, coeff_b)]);
             break;
+
+        case "spiral":
+            for (let x = 0; x <= domain; x += dx) points.push([Math.cos(x) * Spiral(alpha, x) + domain / 2, Math.sin(x) * Spiral(alpha, x) + 5]);
     }
     return points;
 }
@@ -92,35 +111,38 @@ function SquareWave(x, a, b, c){ return -2*a * Math.floor(b/2 * x) + a * Math.fl
 function SineWave(x, a, b, c){ return a * Math.sin(b * x) + c; }
 function Parabola(x, a, b, c){ return a * Math.pow(x, 2) + b * x + c; }
 function Linear(x, a, b){ return a * x + b; }
+function Spiral(a, theta){ return Math.abs(a * theta); }
 
-async function StartTracker(records, tracker, points, speed, unit){
-    var num_cycles = 0;
-    var cursor_pos = [0, 0];
+async function StartTracker(records, canvas, tracker, points, speed, unit){
+    let num_cycles = 0;
+    const canvas_pos = canvas.getBoundingClientRect();
+    let cursor_pos = [0, 0];
     onmousemove = function(e){cursor_pos = [e.clientX, e.clientY]};
     
     await Countdown(3);
-    
-    const canvas_pos = document.getElementById("canvas").getBoundingClientRect();
     for (var i = 0; i < points.length - 1; i++){
-        var curr = points[i], next = points[i+1];
+        let curr = [points[i][0], points[i][1]], next = points[i+1];
+        let curr_dist = 0;
         const vector = ComputeTrackerVector(curr, next);
+        const vector_len = Math.sqrt(Math.pow(vector[0], 2) + Math.pow(vector[1], 2));
         
-        while (curr[0] < next[0] && ((vector[1] > 0 && curr[1] <= next[1]) || (vector[1] < 0 && curr[1] >= next[1]) || (vector[1] == 0 && curr[1] == next[1]))) {
+        while (curr_dist < vector_len) {
             const timestamp = num_cycles * 10;
             const tracker_pos = tracker.getBoundingClientRect();
 
             records.push({timestamp: timestamp,
                 tracker_x: tracker_pos.left + 7.5 - canvas_pos.left,
-                tracker_y: tracker_pos.top + 7.5 - canvas_pos.top,
+                tracker_y: (tracker_pos.top + 7.5 - canvas_pos.top) / unit,
                 mouse_x: cursor_pos[0] - canvas_pos.left,
-                mouse_y: cursor_pos[1] - canvas_pos.top});
+                mouse_y: (cursor_pos[1] - canvas_pos.top) / unit});
 
-            curr[0] += vector[0];
-            curr[1] += vector[1];
+            curr[0] += vector[0] * speed / 2;
+            curr[1] += vector[1] * speed / 2;
+            curr_dist = Math.sqrt(Math.pow(curr[0] - points[i][0], 2) + Math.pow(curr[1] - points[i][1], 2));
             tracker.style.left = `${curr[0] * unit - tracker.width / 2}px`;
             tracker.style.top = `${400-(curr[1] * unit + tracker.height / 2)}px`;
             
-            await Sleep(10 / speed);
+            await Sleep(5);
             num_cycles++;
         }
     }
@@ -160,15 +182,16 @@ function DownloadCSV(csvContent, fileName) {
     window.URL.revokeObjectURL(url);
 }
 
-function PlotResults(canvas, results){
+function PlotResults(canvas, results, unit){
     const ctx = canvas.getContext("2d");
+    ctx.imageSmoothingEnabled = false;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
     for (const record of results){
         const x = record.timestamp * 800 / results[results.length - 1].timestamp;
-        const y_e = record.tracker_y;
-        const y_o = record.mouse_y;
+        const y_e = record.tracker_y * unit;
+        const y_o = record.mouse_y * unit;
 
         ctx.fillStyle = "green";
         ctx.fillRect(x, y_e, 2, 2);
