@@ -210,7 +210,8 @@
                     break;
             }
             document.getElementById(func_type).selected = "selected";
-            DisplaySettings(func_type);
+            if (composite) DisplaySettings("spiral-composite");
+            else DisplaySettings(func_type);
             data = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c, alpha);
             PlotPoints(canvas, data, domain, unit, tracker);
         });
