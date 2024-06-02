@@ -177,6 +177,7 @@ async function StartTracker(records, canvas, tracker, data, speed, unit, spiral=
 
             const true_x = (-m * tracker_x + tracker_y - mouse_y - 1/(m + 0.0000001) * mouse_x) / (-1/(m + 0.0000001) - m);
             const true_y = m * (true_x - tracker_x) + tracker_y;
+            const abs_error = Math.sqrt(Math.pow(mouse_x - tracker_x, 2) + Math.pow(mouse_y - tracker_y, 2));
             let error = Math.sqrt(Math.pow(mouse_x - true_x, 2) + Math.pow(mouse_y - true_y, 2));
             if (m * (mouse_x - tracker_x) + tracker_y < mouse_y) error *= -1;
             const delay = Math.sqrt(Math.pow(tracker_x - true_x, 2) + Math.pow(tracker_y - true_y, 2));
@@ -184,8 +185,7 @@ async function StartTracker(records, canvas, tracker, data, speed, unit, spiral=
             records.push({timestamp: timestamp,
                 tracker_y: tracker_y, // TRACKER Y-COORD RELATIVE TO Y=0
                 mouse_y: mouse_y,     // MOUSE Y-COORD RELATIVE TO Y=0
-                true_x: true_x, // NORMAL AND TANGENT INTERSECTION X-COORD
-                true_y: true_y, // NORMAL AND TANGENT INTERSECTION Y-COORD
+                abs_error: abs_error, // DIFFERENCE RELATIVE TO Y=0
                 error: error, // Y-COORD DIFFERENCE PERPENDICULAR TO TANGENT
                 delay: delay, // X-COORD DIFFERENCE PARALLEL TO TANGENT
                 unit: unit
