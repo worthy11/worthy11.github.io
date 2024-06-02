@@ -212,7 +212,7 @@
             document.getElementById(func_type).selected = "selected";
             if (composite) DisplaySettings("spiral-composite");
             else DisplaySettings(func_type);
-            data = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c, alpha);
+            data = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c, alpha, composite, length);
             PlotPoints(canvas, data, domain, unit, tracker);
         });
 
@@ -221,46 +221,46 @@
             sizefix = !sizefix;
             resizeCanvas();
             DisplaySettings(func_type);
-            data = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c, alpha);
+            data = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c, alpha, composite, length);
             PlotPoints(canvas, data, domain, unit, tracker);
         };
 
         document.getElementById("functype").oninput = function(){
             func_type = this.value;
             DisplaySettings(func_type);
-            data = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c, alpha);
+            data = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c, alpha, composite, length);
             PlotPoints(canvas, data, domain, unit, tracker);
         };
         
         document.getElementById("freq_in").oninput = function() {
             freq = this.value;
             document.getElementById("freq_display").innerHTML = freq;
-            data = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c, alpha, length);
+            data = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c, alpha, composite, length);
             PlotPoints(canvas, data, domain, unit, tracker);
         };
         
         document.getElementById("amp_in").oninput = function() {
             amp = this.value;
             document.getElementById("amp_display").innerHTML = amp;
-            data = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c, alpha, length);
+            data = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c, alpha, composite, length);
             PlotPoints(canvas, data, domain, unit, tracker);
         };
         
         document.getElementById("a_in").oninput = function() {
             coeff_a = this.value;
-            data = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c, alpha);
+            data = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c, alpha, composite, length);
             PlotPoints(canvas, data, domain, unit, tracker);
         };
         
         document.getElementById("b_in").oninput = function() {
             coeff_b = this.value;
-            data = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c, alpha);
+            data = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c, alpha, composite, length);
             PlotPoints(canvas, data, domain, unit, tracker);
         };
         
         document.getElementById("c_in").oninput = function() {
             coeff_c = this.value;
-            data = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c, alpha);
+            data = GeneratePoints(func_type, domain, freq, amp, coeff_a, coeff_b, coeff_c, alpha, composite, length);
             PlotPoints(canvas, data, domain, unit, tracker);
         };
         
