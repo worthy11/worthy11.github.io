@@ -40,7 +40,6 @@
 
 .plot
 {
-    width: 814px;
     height: fit-content;
 }
 
@@ -50,7 +49,7 @@
     {
         flex-direction: column;
     }
-
+    
     .settings-wrapper
     {
         margin: 10px auto;
@@ -61,7 +60,6 @@
         width: 300px;
     }
 
-
     .plot
     {
         margin: 10px auto;
@@ -71,9 +69,9 @@
 .widget-header
 {
     padding: 5px;
-
+    
     background-color: rgb(78, 136, 243);
-
+    
     font-size: 20px;
     font-weight: bold;
     color: white;
@@ -82,7 +80,7 @@
 .widget-content
 {
     padding: 5px;
-
+    
     font-size: 13px;
     font-weight: 300;
     color: rgb(26, 56, 111);
@@ -103,8 +101,44 @@
 {
     width: 100%;
     margin-bottom: 3px;
-
+    
     text-align: center;
+}
+
+.instruction-holder
+{
+    display: flex;
+    width: 80%;
+    justify-content: left;
+
+    margin: 5px 0;
+}
+
+.instruction-key
+{
+    float: left;
+    width: 25px;
+
+    border-radius: 5px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: black;
+    
+    background-color: white;
+    font-size: 20px;
+    font-weight: 800;
+    text-align: center;
+}
+
+.instruction-action
+{
+    float: left;
+    padding-top: 5px;
+    padding-left: 10px;
+    margin-bottom: 3px;
+
+    font-size: 15px;
+    font-weight: 700;
 }
 
 .canvas
