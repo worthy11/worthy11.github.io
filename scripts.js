@@ -143,16 +143,7 @@ function Spiral(a, x, composite=false, amp=0.5, derivative=false){
     return [Math.cos(x) * r, Math.sin(x) * r];
  }
 
-async function StartTracker(records, canvas, tracker, data, speed, unit, func_type, a, b){
-    const err_func = {
-        "square": ErrSquare,
-        "sine": ErrSine,
-        "parabola": ErrSquare,
-        "linear": ErrSquare,
-        "spiral": ErrSquare,
-        "spiral-composite": ErrSquare
-    }
-
+async function StartTracker(records, canvas, tracker, data, speed, unit, spiral=false){
     const canvas_pos = canvas.getBoundingClientRect();
     const ctx = canvas.getContext("2d");
     let cursor_pos = [0, 0];
@@ -172,7 +163,7 @@ async function StartTracker(records, canvas, tracker, data, speed, unit, func_ty
 
         // CONVERT FROM ANGULAR TO LINEAR VELOCITY
         let r = 40;
-        if (func_type == "spiral") r = Math.sqrt(Math.pow(canvas.width / 2 - points[i][0] * unit, 2) + Math.pow(canvas.height / 2 - points[i][1] * unit, 2));
+        if (spiral) r = Math.sqrt(Math.pow(canvas.width / 2 - points[i][0] * unit, 2) + Math.pow(canvas.height / 2 - points[i][1] * unit, 2));
         
         while (curr_dist < vector_len) {
             tracker.style.left = `${curr[0] * unit - tracker.width / 2}px`;
@@ -184,17 +175,19 @@ async function StartTracker(records, canvas, tracker, data, speed, unit, func_ty
             const mouse_x = cursor_pos[0] - canvas_pos.left;
             const mouse_y = cursor_pos[1] - canvas_pos.top;
 
+            const true_x = (-m * tracker_x + tracker_y - mouse_y - 1/(m + 0.0000001) * mouse_x) / (-1/(m + 0.0000001) - m);
+            const true_y = m * (true_x - tracker_x) + tracker_y;
             const abs_error = Math.sqrt(Math.pow(mouse_x - tracker_x, 2) + Math.pow(mouse_y - tracker_y, 2));
-            const error = err_func[func_type](m, tracker_x, tracker_y, mouse_x, mouse_y, a, b, 5, unit, canvas.height); 
-            // const delay = Math.sqrt(Math.pow(tracker_x - true_x, 2) + Math.pow(tracker_y - true_y, 2));
+            let error = Math.sqrt(Math.pow(mouse_x - true_x, 2) + Math.pow(mouse_y - true_y, 2));
+            if (m * (mouse_x - tracker_x) + tracker_y < mouse_y) error *= -1;
+            const delay = Math.sqrt(Math.pow(tracker_x - true_x, 2) + Math.pow(tracker_y - true_y, 2));
 
-            records.push({
-                timestamp: timestamp,
+            records.push({timestamp: timestamp,
                 tracker_y: tracker_y, // TRACKER Y-COORD RELATIVE TO Y=0
                 mouse_y: mouse_y,     // MOUSE Y-COORD RELATIVE TO Y=0
                 abs_error: abs_error, // DIFFERENCE RELATIVE TO Y=0
                 error: error, // Y-COORD DIFFERENCE PERPENDICULAR TO TANGENT
-                // poslizg: delay, // X-COORD DIFFERENCE PARALLEL TO TANGENT
+                delay: delay, // X-COORD DIFFERENCE PARALLEL TO TANGENT
                 unit: unit
             });
 
@@ -207,63 +200,6 @@ async function StartTracker(records, canvas, tracker, data, speed, unit, func_ty
         }
     }
 }
-
-function ErrSquare(m, tracker_x, tracker_y, mouse_x, mouse_y){
-    const true_x = (-m * tracker_x + tracker_y - mouse_y - 1/(m + 0.0000001) * mouse_x) / (-1/(m + 0.0000001) - m);
-    const true_y = m * (true_x - tracker_x) + tracker_y;
-    let error = Math.sqrt(Math.pow(mouse_x - true_x, 2) + Math.pow(mouse_y - true_y, 2));
-    if (m * (mouse_x - tracker_x) + tracker_y < mouse_y) error *= -1;
-    return error;
-}
-
-function ErrSine(m, tracker_x, tracker_y, mouse_x, mouse_y, a, b, c, unit, height){
-    let sol;
-    let sol_1 = Math.asin(((height - mouse_y) / unit - c) / a) / b;
-    let sol_2 = Math.PI - sol_1;
-    let dist_1 = [];
-    let dist_1_sign = [];
-    let dist_2 = [];
-    let dist_2_sign = [];
-    let min_1 = 10000;
-    let min_2 = 10000;
-    while (sol_1 <= 20){
-        dist_1.push(Math.abs(sol_1 - mouse_x / unit));
-        if (Math.abs(sol_1 - mouse_x / unit) < min_1) min_1 = Math.abs(sol_1 - mouse_x / unit);
-        dist_1_sign.push(Math.sign(sol_1 - mouse_x / unit));
-        sol_1 += 2 * Math.PI;
-    }
-    while (sol_2 <= 20){
-        dist_2.push(Math.abs(sol_2 - mouse_x / unit));
-        if (Math.abs(sol_2 - mouse_x / unit) < min_2) min_2 = Math.abs(sol_2 - mouse_x / unit);
-        dist_2_sign.push(Math.sign(sol_2 - mouse_x / unit));
-        sol_2 += 2 * Math.PI;
-    }
-    if (min_1 <= min_2){
-        for (const [idx, dist] of dist_1.entries()){
-            if (dist == min_1){
-                sol = mouse_x / unit + min_1 * dist_1_sign[idx];
-                break;
-            }
-        }
-    } else {
-        for (const [idx, dist] of dist_2.entries()){
-            if (dist == min_2){
-                sol = mouse_x / unit + min_2 * dist_2_sign[idx];
-                break;
-            }
-        }
-    }
-    sol *= unit;
-
-    const point_a = [mouse_x, height - SineWave(mouse_x / unit, a, b, c) * unit];
-    const point_b = [sol, mouse_y];
-
-    const point_mid = [(point_a[0] + point_b[0]) / 2, (point_a[1] + point_b[1]) / 2];
-    const error = Math.sqrt(Math.pow(mouse_x - point_mid[0], 2) + Math.pow(mouse_y - point_mid[1], 2));
-    console.log(sol)
-    return error;
-}
-
 
 function ComputeTrackerVector(curr, next){
     return [(next[0] - curr[0]), (next[1] - curr[1])];

@@ -313,7 +313,8 @@
         start_test.addEventListener('click', async function(){
             records = [];
             scroll(0,0);
-            await StartTracker(records, canvas, tracker, data, speed, unit, func_type, amp / 2, 2 * Math.PI * freq / domain);
+            const spiral = func_type == "spiral";
+            await StartTracker(records, canvas, tracker, data, speed, unit, spiral);
             document.getElementById("result-widget").style.display = "block";
             PlotResults(result, records, unit);
         });
